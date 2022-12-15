@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun communicate() {
         sendTaskUsb = SendTaskUsb()
-        sendTaskUsb?.execute(mOutEndpoint)
+        sendTaskUsb?.execute(binding.editTextMessege.text.toString())
 //        mDevice?.getInterface(0)?.also { intf ->
 //            intf.getEndpoint(0)?.also { endpoint ->
 //                mControlEndpoint = endpoint
@@ -163,13 +163,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     class SendTaskUsb :
-        AsyncTask<UsbEndpoint?, String?, Void?>() {
+        AsyncTask<String?, String?, Void?>() {
         override fun onPreExecute() {
             super.onPreExecute()
 //            progressBar2.setVisibility(ProgressBar.VISIBLE)
         }
 
-        protected override fun doInBackground(vararg endpoints: UsbEndpoint?): Void? {
+        protected override fun doInBackground(vararg messeges: String?): Void? {
             try {
 //                sendName("name" + ua.zp.uvs.wifisender.ServerFileActivity.fileInform.getChosenFile())
 //                Thread.sleep(5000)
@@ -179,20 +179,22 @@ class MainActivity : AppCompatActivity() {
 //                )
 //                Thread.sleep(5000)
 //                sendName(endpoints[0], "Start")
-                publishProgress(sendName(endpoints[0], "Start"))
+                publishProgress(sendName(mOutEndpoint, messeges[0]))
             } catch (e: Exception) {
                 publishProgress(e.toString())
             }
             return null
         }
 
-        private fun sendName(endpoint: UsbEndpoint?, chosenFile: String): String? {
+        private fun sendName(endpoint: UsbEndpoint?, chosenFile: String?): String? {
 
             // Check that there's actually something to send
-            if (chosenFile.length > 0) {
-                // Get the message bytes and tell the BluetoothChatService to write
-                val send = chosenFile.toByteArray()
-                bytes = send
+            if (chosenFile != null) {
+                if (chosenFile.length > 0) {
+                    // Get the message bytes and tell the BluetoothChatService to write
+                    val send = chosenFile.toByteArray()
+                    bytes = send
+                }
             }
             var bytesWritten = mAccessoryConnection?.bulkTransfer(endpoint, bytes, bytes.size, TIMEOUT)
             return bytesWritten.toString()
